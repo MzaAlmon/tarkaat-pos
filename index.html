@@ -247,10 +247,27 @@ body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;background:var
 #toast.show{transform:translateX(-50%) translateY(0)}
 /* MOBILE */
 @media(max-width:640px){
-  #sidebar{width:52px}
-  #cart-panel{width:260px}
-  #products-grid.vi{grid-template-columns:repeat(2,1fr)}
-  #products-grid.vc{grid-template-columns:repeat(2,1fr)}
+  #sidebar{width:50px}
+  .nav-btn span{display:none}
+  #cashier-page{flex-direction:column!important}
+  #products-panel{flex:1;min-height:0}
+  #cart-panel{width:100%;height:auto;max-height:42vh;border-right:none;border-top:.5px solid var(--border)}
+  #products-grid.vi{grid-template-columns:repeat(3,1fr)}
+  #products-grid.vc{grid-template-columns:repeat(3,1fr)}
+  #products-grid.vp{grid-template-columns:repeat(2,1fr)}
+  .cart-footer{padding:7px}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-row{grid-template-columns:1fr}
+  .client-cards{grid-template-columns:1fr}
+  .pe{font-size:20px}
+  .pn{font-size:10px}
+  .pp{font-size:11px}
+  .prod-card{padding:7px}
+  #cart-items{max-height:120px}
+  .disc-row input{width:60px}
+}
+@media(max-width:400px){
+  #products-grid.vi,#products-grid.vc,#products-grid.vp{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -260,8 +277,8 @@ body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;background:var
 <div id="login-screen">
   <div style="text-align:center;color:#fff">
     <div style="font-size:48px;margin-bottom:8px">🏪</div>
-    <div style="font-size:22px;font-weight:700">نظام الكاشير المتكامل</div>
-    <div style="font-size:13px;opacity:.75;margin-top:4px">خدمات السيارات المتنقلة</div>
+    <div style="font-size:22px;font-weight:700">مقهى ومخبز الرياض</div>
+    <div style="font-size:13px;opacity:.75;margin-top:4px">نظام الكاشير المتكامل</div>
   </div>
   <div class="login-box">
     <div class="login-logo">🔐</div>
@@ -409,15 +426,36 @@ body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;background:var
         <div class="s-row"><div><div class="s-lbl">تنبيه انتهاء الصلاحية (أيام)</div></div><input class="s-inp" id="ss-ew" type="number" onchange="ss('expWarn',this.value)" style="width:70px"></div>
       </div>
       <div class="s-card">
+        <div class="s-hdr">🔒 الصلاحيات</div>
+        <div class="s-row"><div><div class="s-lbl">تعديل الفواتير المحفوظة</div><div class="s-dsc">صلاحية مدير فقط</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="s-row"><div><div class="s-lbl">حذف المنتجات</div><div class="s-dsc">صلاحية مدير فقط</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="s-row"><div><div class="s-lbl">خصم المخزون تلقائياً</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+      </div>
+      <div class="s-card">
         <div class="s-hdr">🗂 المجموعات</div>
         <div id="cats-s" style="padding:10px 13px;display:flex;flex-direction:column;gap:5px"></div>
         <div style="padding:10px 13px"><button class="add-btn" onclick="addCat()" style="font-size:12px;padding:6px 11px">+ إضافة مجموعة</button></div>
       </div>
       <div class="s-card">
-        <div class="s-hdr">🔒 الصلاحيات</div>
-        <div class="s-row"><div><div class="s-lbl">تعديل الفواتير</div><div class="s-dsc">صلاحية مدير فقط</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
-        <div class="s-row"><div><div class="s-lbl">حذف المنتجات</div><div class="s-dsc">صلاحية مدير فقط</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
-        <div class="s-row"><div><div class="s-lbl">خصم المخزون تلقائياً</div></div><button class="tog on" onclick="this.classList.toggle('on')"></button></div>
+        <div class="s-hdr">🖨 إعدادات الطباعة</div>
+        <div class="s-row"><div><div class="s-lbl">طباعة تلقائية بعد البيع</div><div class="s-dsc">إيقاف = يسألك قبل الطباعة</div></div><button class="tog" id="tog-print" onclick="toggleAutoPrint(this)"></button></div>
+        <div class="s-row"><div><div class="s-lbl">نوع الفاتورة الافتراضي</div></div>
+          <select class="s-sel" id="ss-it" onchange="ss('invType',this.value)">
+            <option value="thermal">🖨 حراري 80mm</option>
+            <option value="a4">📄 A4</option>
+          </select>
+        </div>
+      </div>
+      <div class="s-card">
+        <div class="s-hdr">📱 إعدادات العرض على الموبايل</div>
+        <div class="s-row"><div><div class="s-lbl">وضع عرض الكاشير</div><div class="s-dsc">عدد الأعمدة في شاشة المنتجات</div></div>
+          <select class="s-sel" id="ss-mv" onchange="changeMobileView(this.value)">
+            <option value="vp">iPhone (عمودان)</option>
+            <option value="vc">مخصص (3 أعمدة)</option>
+            <option value="vi">iPad (4 أعمدة)</option>
+          </select>
+        </div>
+        <div class="s-row"><div><div class="s-lbl">تبويب سريع للمجموعات</div><div class="s-dsc">عرض المجموعات كأزرار كبيرة</div></div><button class="tog on" id="tog-bigcats" onclick="this.classList.toggle('on')"></button></div>
       </div>
     </div>
   </div>
@@ -435,6 +473,7 @@ body{font-family:'Segoe UI',Tahoma,Arial,sans-serif;direction:rtl;background:var
       <div id="inv-a4" style="display:none"></div>
     </div>
     <div class="inv-actions">
+      <button class="ib" onclick="backToCashier()">🏠 كاشير جديد</button>
       <button class="ib" onclick="closeInv()">إغلاق</button>
       <button class="ib p" onclick="printInv()">🖨 طباعة</button>
     </div>
@@ -524,24 +563,32 @@ const USERS=[{name:'مدير',pass:'1234',role:'manager'},{name:'أحمد',pass:
 
 function initDB(){
   if(!DB.get('products'))DB.set('products',[
-    {id:1,nameAr:'زيت محرك',nameEn:'Engine Oil',price:45,cost:28,qty:20,alert:5,barcode:'6281234560001',emoji:'🛢',category:'صيانة',active:true,expiry:''},
-    {id:2,nameAr:'فلتر هواء',nameEn:'Air Filter',price:35,cost:18,qty:3,alert:5,barcode:'6281234560002',emoji:'🌬',category:'فلاتر',active:true,expiry:'2026-09-30'},
-    {id:3,nameAr:'شمعة إشعال',nameEn:'Spark Plug',price:25,cost:12,qty:15,alert:4,barcode:'6281234560003',emoji:'⚡',category:'كهربا',active:true,expiry:''},
-    {id:4,nameAr:'فرامل أمامية',nameEn:'Front Brake',price:180,cost:95,qty:8,alert:3,barcode:'6281234560004',emoji:'🛑',category:'فرامل',active:true,expiry:''},
-    {id:5,nameAr:'مستلزمات تنظيف',nameEn:'Cleaning Kit',price:20,cost:10,qty:30,alert:8,barcode:'6281234560005',emoji:'🧹',category:'تنظيف',active:true,expiry:''},
-    {id:6,nameAr:'زيت ناقل حركة',nameEn:'Gear Oil',price:55,cost:33,qty:12,alert:4,barcode:'6281234560006',emoji:'⚙️',category:'صيانة',active:true,expiry:''},
-    {id:7,nameAr:'مياه مشعات',nameEn:'Coolant',price:18,cost:8,qty:0,alert:5,barcode:'6281234560007',emoji:'💧',category:'سوائل',active:true,expiry:''},
-    {id:8,nameAr:'فلتر زيت',nameEn:'Oil Filter',price:22,cost:11,qty:18,alert:5,barcode:'6281234560008',emoji:'🔩',category:'فلاتر',active:true,expiry:''},
+    {id:1,nameAr:'قهوة عربية',nameEn:'Arabic Coffee',price:8,cost:3,qty:999,alert:10,barcode:'',emoji:'☕',category:'مشروبات ساخنة',active:true,expiry:''},
+    {id:2,nameAr:'شاي أحمر',nameEn:'Black Tea',price:5,cost:1.5,qty:999,alert:10,barcode:'',emoji:'🍵',category:'مشروبات ساخنة',active:true,expiry:''},
+    {id:3,nameAr:'كابتشينو',nameEn:'Cappuccino',price:15,cost:5,qty:999,alert:10,barcode:'',emoji:'🫖',category:'مشروبات ساخنة',active:true,expiry:''},
+    {id:4,nameAr:'لاتيه',nameEn:'Latte',price:16,cost:5,qty:999,alert:10,barcode:'',emoji:'🥛',category:'مشروبات ساخنة',active:true,expiry:''},
+    {id:5,nameAr:'عصير برتقال',nameEn:'Orange Juice',price:12,cost:4,qty:50,alert:5,barcode:'',emoji:'🍊',category:'مشروبات باردة',active:true,expiry:''},
+    {id:6,nameAr:'عصير تفاح',nameEn:'Apple Juice',price:10,cost:3,qty:50,alert:5,barcode:'',emoji:'🍎',category:'مشروبات باردة',active:true,expiry:''},
+    {id:7,nameAr:'ليموناضة',nameEn:'Lemonade',price:12,cost:3.5,qty:999,alert:5,barcode:'',emoji:'🍋',category:'مشروبات باردة',active:true,expiry:''},
+    {id:8,nameAr:'كولا',nameEn:'Cola',price:5,cost:2,qty:60,alert:10,barcode:'',emoji:'🥤',category:'مشروبات باردة',active:true,expiry:''},
+    {id:9,nameAr:'كيكة شوكولاتة',nameEn:'Chocolate Cake',price:18,cost:7,qty:20,alert:3,barcode:'',emoji:'🍰',category:'حلويات',active:true,expiry:'2026-03-25'},
+    {id:10,nameAr:'كنافة',nameEn:'Kunafa',price:20,cost:8,qty:15,alert:3,barcode:'',emoji:'🍮',category:'حلويات',active:true,expiry:'2026-03-22'},
+    {id:11,nameAr:'بسكويت',nameEn:'Cookies',price:10,cost:4,qty:40,alert:8,barcode:'',emoji:'🍪',category:'حلويات',active:true,expiry:'2026-06-30'},
+    {id:12,nameAr:'خبز بالزعتر',nameEn:'Thyme Bread',price:8,cost:2.5,qty:30,alert:5,barcode:'',emoji:'🫓',category:'مخبوزات',active:true,expiry:'2026-03-20'},
+    {id:13,nameAr:'كرواسون',nameEn:'Croissant',price:10,cost:3,qty:25,alert:5,barcode:'',emoji:'🥐',category:'مخبوزات',active:true,expiry:'2026-03-20'},
+    {id:14,nameAr:'سمبوسة',nameEn:'Samosa',price:5,cost:1.5,qty:50,alert:10,barcode:'',emoji:'🥟',category:'مخبوزات',active:true,expiry:''},
+    {id:15,nameAr:'سكر',nameEn:'Sugar',price:8,cost:4,qty:30,alert:5,barcode:'6281001234001',emoji:'🍬',category:'مواد غذائية',active:true,expiry:'2027-01-01'},
+    {id:16,nameAr:'قهوة مطحونة',nameEn:'Ground Coffee',price:35,cost:18,qty:20,alert:4,barcode:'6281001234002',emoji:'☕',category:'مواد غذائية',active:true,expiry:'2026-12-31'},
   ]);
-  if(!DB.get('cats'))DB.set('cats',['الكل','صيانة','فلاتر','كهربا','فرامل','تنظيف','سوائل']);
+  if(!DB.get('cats'))DB.set('cats',['الكل','مشروبات ساخنة','مشروبات باردة','حلويات','مخبوزات','مواد غذائية']);
   if(!DB.get('invoices'))DB.set('invoices',[]);
   if(!DB.get('iseq'))DB.set('iseq',1);
   if(!DB.get('clients'))DB.set('clients',[
     {id:1,name:'محمد العمري',phone:'0551234567',limit:500,notes:'عميل دائم',debt:[]},
-    {id:2,name:'خالد الشمري',phone:'0509876543',limit:300,notes:'',debt:[{type:'owed',amount:150,note:'فاتورة RYD-0001',date:'2026-03-10'}]},
+    {id:2,name:'خالد الشمري',phone:'0509876543',limit:300,notes:'',debt:[{type:'owed',amount:85,note:'فاتورة RYD-0001',date:'2026-03-10'}]},
   ]);
   if(!DB.get('cseq'))DB.set('cseq',3);
-  if(!DB.get('cfg'))DB.set('cfg',{storeName:'متجر الخدمات المتنقلة',cashierName:'أحمد',branch:'RYD',invoiceMsg:'شكراً لزيارتكم 💚',expWarn:7});
+  if(!DB.get('cfg'))DB.set('cfg',{storeName:'مقهى ومخبز الرياض',cashierName:'أحمد',branch:'RYD',invoiceMsg:'شكراً لزيارتكم، نراكم قريباً ☕',expWarn:3,autoPrint:false,mobileView:'vp'});
 }
 function gCfg(){return DB.get('cfg')||{}}
 function ss(k,v){const c=gCfg();c[k]=v;DB.set('cfg',c)}
@@ -688,16 +735,25 @@ function sit(t,btn){invType=t;document.querySelectorAll('.itb').forEach(b=>b.cla
 function buildInv(inv,cfg){
   const mm={cash:'كاش',network:'شبكة',credit:'آجل'};
   document.getElementById('inv-thermal').innerHTML=`<div class="thc thn">${cfg.storeName||'المتجر'}</div><div class="thc" style="font-size:10px">فاتورة ضريبية مبسطة</div><div class="thhr"></div><div class="thr"><span>رقم الفاتورة</span><span>${inv.num}</span></div><div class="thr"><span>التاريخ</span><span>${inv.date}</span></div><div class="thr"><span>الكاشير</span><span>${inv.cashier}</span></div><div class="thr"><span>الدفع</span><span>${mm[inv.method]||inv.method}</span></div>${inv.clientName?`<div class="thr"><span>العميل</span><span>${inv.clientName}</span></div>`:''}${inv.receipt?`<div class="thr"><span>إيصال</span><span>${inv.receipt}</span></div>`:''}<div class="thhr"></div><div class="thih"><span>المنتج</span><span>ك×س</span><span>المجموع</span></div>${inv.items.map(it=>`<div class="thit"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px">${it.nameAr}</span><span style="margin:0 4px;white-space:nowrap">${it.qty}×${it.price}</span><span>${(it.price*it.qty).toFixed(2)}</span></div>`).join('')}<div class="thhr"></div>${inv.discount>0?`<div class="thr"><span>الخصم</span><span>- ${inv.discount.toFixed(2)}</span></div>`:''}<div class="thtot"><span>الإجمالي</span><span>${inv.total.toFixed(2)} ر.س</span></div><div class="thhr"></div><div class="thmsg">${cfg.invoiceMsg||'شكراً لزيارتكم'}</div><div class="thc" style="font-size:9px;margin-top:5px;color:#888">* احتفظ بهذه الفاتورة *</div>`;
-  document.getElementById('inv-a4').innerHTML=`<div class="a4h"><div><div class="a4l">${cfg.storeName||'المتجر'}</div><div class="a4ls">خدمات السيارات المتنقلة</div></div><div class="a4ib"><div class="a4in">${inv.num}</div><div class="a4id">${inv.date}</div></div></div><div class="a4ig"><div class="a4ib2"><div class="a4il">الكاشير</div><div style="font-size:13px;font-weight:600">${inv.cashier}</div></div><div class="a4ib2"><div class="a4il">طريقة الدفع</div><div style="font-size:13px;font-weight:600">${mm[inv.method]||inv.method}${inv.receipt?' — '+inv.receipt:''}</div></div>${inv.clientName?`<div class="a4ib2"><div class="a4il">العميل</div><div style="font-size:13px;font-weight:600">${inv.clientName}</div></div>`:''}</div><table class="a4t"><thead><tr><th>#</th><th>المنتج</th><th>سعر الوحدة</th><th>الكمية</th><th style="text-align:left">المجموع</th></tr></thead><tbody>${inv.items.map((it,i)=>`<tr><td>${i+1}</td><td>${it.nameAr}</td><td>${it.price.toFixed(2)} ر.س</td><td>${it.qty}</td><td style="text-align:left;font-weight:600">${(it.price*it.qty).toFixed(2)} ر.س</td></tr>`).join('')}</tbody></table><div style="display:flex;justify-content:flex-start"><div class="a4tot"><div class="a4tr"><span>المجموع الفرعي</span><span>${inv.subtotal.toFixed(2)} ر.س</span></div>${inv.discount>0?`<div class="a4tr" style="color:var(--danger)"><span>الخصم</span><span>- ${inv.discount.toFixed(2)} ر.س</span></div>`:''}<div class="a4tr a4gr"><span>الإجمالي</span><span>${inv.total.toFixed(2)} ر.س</span></div></div></div><div class="a4ft">${cfg.invoiceMsg||'شكراً لزيارتكم'} | وثيقة ضريبية مبسطة</div>`;
+  document.getElementById('inv-a4').innerHTML=`<div class="a4h"><div><div class="a4l">${cfg.storeName||'المتجر'}</div><div class="a4ls">مقهى ومخبوزات وحلويات</div></div><div class="a4ib"><div class="a4in">${inv.num}</div><div class="a4id">${inv.date}</div></div></div><div class="a4ig"><div class="a4ib2"><div class="a4il">الكاشير</div><div style="font-size:13px;font-weight:600">${inv.cashier}</div></div><div class="a4ib2"><div class="a4il">طريقة الدفع</div><div style="font-size:13px;font-weight:600">${mm[inv.method]||inv.method}${inv.receipt?' — '+inv.receipt:''}</div></div>${inv.clientName?`<div class="a4ib2"><div class="a4il">العميل</div><div style="font-size:13px;font-weight:600">${inv.clientName}</div></div>`:''}</div><table class="a4t"><thead><tr><th>#</th><th>المنتج</th><th>سعر الوحدة</th><th>الكمية</th><th style="text-align:left">المجموع</th></tr></thead><tbody>${inv.items.map((it,i)=>`<tr><td>${i+1}</td><td>${it.nameAr}</td><td>${it.price.toFixed(2)} ر.س</td><td>${it.qty}</td><td style="text-align:left;font-weight:600">${(it.price*it.qty).toFixed(2)} ر.س</td></tr>`).join('')}</tbody></table><div style="display:flex;justify-content:flex-start"><div class="a4tot"><div class="a4tr"><span>المجموع الفرعي</span><span>${inv.subtotal.toFixed(2)} ر.س</span></div>${inv.discount>0?`<div class="a4tr" style="color:var(--danger)"><span>الخصم</span><span>- ${inv.discount.toFixed(2)} ر.س</span></div>`:''}<div class="a4tr a4gr"><span>الإجمالي</span><span>${inv.total.toFixed(2)} ر.س</span></div></div></div><div class="a4ft">${cfg.invoiceMsg||'شكراً لزيارتكم'} | وثيقة ضريبية مبسطة</div>`;
 }
 function closeInv(){document.getElementById('inv-modal').classList.remove('show')}
 function printInv(){
+  const cfg=gCfg();
+  if(cfg.autoPrint===false){
+    // show confirm only if auto-print is off
+    if(!confirm('هل تريد الطباعة؟'))return;
+  }
   const content=invType==='thermal'?document.getElementById('inv-thermal').innerHTML:document.getElementById('inv-a4').innerHTML;
   const w=window.open('','_blank','width=520,height=720');
   if(!w){toast('❌ اسمح بالنوافذ المنبثقة للطباعة');return}
   const style=invType==='thermal'?'*{margin:0;padding:0}body{font-family:Courier New,monospace;padding:8px;width:280px;font-size:12px;color:#000}':'*{margin:0;padding:0;box-sizing:border-box}body{font-family:Segoe UI,Arial,sans-serif;padding:20px;font-size:13px;color:#000;direction:rtl}';
   w.document.write(`<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>فاتورة</title><style>${style}</style></head><body>${content}</body></html>`);
   w.document.close();setTimeout(()=>{w.focus();w.print();},500);
+}
+function backToCashier(){
+  closeInv();
+  nav('cashier-page');
 }
 
 // INVENTORY
@@ -865,7 +921,36 @@ function loadCfgForm(){
   document.getElementById('ss-cn').value=c.cashierName||'';
   document.getElementById('ss-br').value=c.branch||'';
   document.getElementById('ss-im').value=c.invoiceMsg||'';
-  document.getElementById('ss-ew').value=c.expWarn||7;
+  document.getElementById('ss-ew').value=c.expWarn||3;
+  // print toggle
+  const tp=document.getElementById('tog-print');
+  if(tp){c.autoPrint?tp.classList.add('on'):tp.classList.remove('on')}
+  // inv type
+  const it=document.getElementById('ss-it');
+  if(it)it.value=c.invType||'thermal';
+  // mobile view
+  const mv=document.getElementById('ss-mv');
+  if(mv)mv.value=c.mobileView||'vp';
+  // apply saved mobile view
+  const grid=document.getElementById('products-grid');
+  if(grid&&c.mobileView){
+    grid.className=c.mobileView;
+    document.querySelectorAll('.vb').forEach(b=>b.classList.remove('active'));
+    const vbtn=document.querySelector(`.vb[onclick*="${c.mobileView}"]`);
+    if(vbtn)vbtn.classList.add('active');
+  }
+}
+function toggleAutoPrint(btn){
+  btn.classList.toggle('on');
+  ss('autoPrint',btn.classList.contains('on'));
+  toast(btn.classList.contains('on')?'🖨 طباعة تلقائية مفعّلة':'⏸ طباعة تلقائية معطّلة');
+}
+function changeMobileView(val){
+  ss('mobileView',val);
+  const grid=document.getElementById('products-grid');
+  if(grid)grid.className=val;
+  document.querySelectorAll('.vb').forEach(b=>b.classList.remove('active'));
+  toast('✅ تم تغيير طريقة العرض');
 }
 
 // INIT
